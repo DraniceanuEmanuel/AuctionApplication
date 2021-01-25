@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+    <title>Home</title>
+</head>
+<body>
+<!-- Navigation-->
+<ul>
+    <li><a class="active" href="/home">Home</a></li>
+    <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/addProduct">Add Product</a></li>
+    <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/myProducts">My Products</a></li>
+    <li sec:authorize="hasRole('ROLE_USER')"><a href="/myBids">My Bids</a></li>
+    <li sec:authorize="isAnonymous()"><a href="/registration">Register</a></li>
+    <li sec:authorize="isAnonymous()"><a  href="/login">Login</a></li>
+    <li sec:authorize="isAuthenticated()"><a href="/logout">Log Out</a></li>
+</ul>
+<div class="container">
+    <div th:each="product:${products}" class="card" >
+        <a th:href="@{/product/{id}(id=${product.id})}">
+
+            <img th:src="${'data:image/png;base64,'+product.image}" style="width:160px;">
+            <h3 th:text="${product.name}"></h3>
+            <p th:text="${product.startingPrice}"></p>
+        </a>
+    </div>
+</div>
+</body>
+</html>

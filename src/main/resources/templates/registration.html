@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <title>Registration</title>
+</head>
+<body>
+<ul>
+    <li><a href="/home">Home</a></li>
+    <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/addProduct">Add Product</a></li>
+    <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/myProducts">My Products</a></li>
+    <li sec:authorize="hasRole('ROLE_USER')"><a href="/myBids">My Bids</a></li>
+    <li sec:authorize="isAnonymous()"><a class="active" href="/registration">Register</a></li>
+    <li sec:authorize="isAnonymous()"><a href="/login">Login</a></li>
+    <li sec:authorize="isAuthenticated()"><a href="/logout">Log Out</a></li>
+</ul>
+
+<form th:action="@{/registration}" th:object="${userDto}" method="post" class="registration-form">
+    <div class="form-group">
+        <label for="firstName"><b>First name</b></label>
+        <input id="firstName" class="form-control" th:field="*{firstName}">
+    </div>
+    <div class="form-group">
+        <label for="lastName"><b>Last Name</b></label>
+        <input id="lastName" class="form-control" th:field="*{lastName}">
+    </div>
+    <div class="form-group">
+        <label for="password"><b>Password</b></label>
+        <input id="password" class="form-control" th:field="*{password}" type="password">
+    </div>
+    <div class="form-group">
+        <label for="confirmPassword"><b>Confirm Password</b></label>
+        <input id="confirmPassword" class="form-control" th:field="*{confirmPassword}" type="password">
+        <p class="error-message"
+           th:each="error: ${#fields.errors('confirmPassword')}"
+           th:text="${error}"></p>
+    </div>
+    <div class="form-group">
+        <label for="email"><b>Email</b></label>
+        <input id="email" class="form-control" th:field="*{email}" type="email">
+        <p class="error-message"
+           th:each="error: ${#fields.errors('email')}"
+           th:text="${error}"></p>
+    </div>
+    <div class="form-group">
+        <label for="dateOfBirth"><b>Date Of Birth</b></label>
+        <input id="dateOfBirth" class="form-control" th:field="*{dateOfBirth}" type="date">
+    </div>
+    <div class="form-group">
+        <input type="submit" class="btn btn-primary" value="Register">
+    </div>
+</form>
+</body>
+</html>

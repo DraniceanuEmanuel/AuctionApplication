@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/view-product.css}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <title>Product</title>
+</head>
+<body>
+<!-- Navigation-->
+<ul>
+    <li><a class="active" href="/home">Home</a></li>
+    <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/addProduct">Add Product</a></li>
+    <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/myProducts">My Products</a></li>
+    <li sec:authorize="hasRole('ROLE_USER')"><a href="/myBids">My Bids</a></li>
+    <li sec:authorize="isAnonymous()"><a href="/registration">Register</a></li>
+    <li sec:authorize="isAnonymous()"><a href="/login">Login</a></li>
+    <li sec:authorize="isAuthenticated()"><a href="/logout">Log Out</a></li>
+</ul>
+
+<div class="wrapper">
+    <div class="product-img">
+        <img th:src="${'data:image/png;base64,'+productDto.image}" >
+    </div>
+    <div class="product-info">
+        <div class="product-text">
+            <h1 th:text="${productDto.name}"></h1>
+            <h2>Added by <span th:text="${productDto.ownerName}"></span></h2>
+            <p th:text="${productDto.description}"></p>
+        </div>
+        <div class="product-price-btn">
+
+            <p>Started at: <span th:text="${productDto.startingPrice}"></span>$</p>
+            <div th:if="${productDto.statusCode == 'ONGOING'}">
+                <p th:if="${productDto.currentBid != '0'}">Current bid: <span th:text="${productDto.currentBid}"></span>$</p>
+                <p th:if="${productDto.currentBid == '0'}">There are no bids for this product.</p>
+
+                <p th:if="${productDto.currentBid == productDto.userMaximBid and productDto.userMaximBid != '0'}">You are currently winning this product.</p>
+                <p th:if="${productDto.currentBid > productDto.userMaximBid and productDto.userMaximBid != '0'}">Your offer of <span th:text="${productDto.userMaximBid}"></span> was outbidded.</p>
+                <p th:if="${productDto.userMaximBid == '0' and productDto.currentBid != '0'}">Your did not make an offer for this product.</p>
+
+                <form th:action="@{/product/{id}(id=${productDto.id})}" th:object="${bidDto}" method="post"
+                      th:if="${productDto.currentBid != productDto.userMaximBid or productDto.userMaximBid == '0'}">
+                    <div class="form-group">
+                        <label for="bidValue"><b>Your offer</b></label>
+                        <input id="bidValue" class="form-control" th:field="*{value}">
+                        <p class="error-message"
+                           th:each="error: ${#fields.errors('value')}"
+                           th:text="${error}"></p>
+                    </div>
+                    <div>
+                        <input type="submit" value="Bid now!" class="bid-button">
+                    </div>
+                </form>
+            </div>
+
+            <div th:if="${productDto.statusCode != 'ONGOING'}">
+                <p>Sold at <span th:text="${productDto.currentBid}"></span>$
+                    <span th:if="${productDto.statusCode == 'WON'}"> to you</span>
+                    <span th:if="${productDto.statusCode == 'LOST'}"> to someone else</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
